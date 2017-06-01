@@ -5,7 +5,6 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 var Router = BrowserRouter;
 
-import { Home } from './home';
 import { Game } from './game';
 
 export class App extends React.Component {
@@ -14,8 +13,7 @@ export class App extends React.Component {
       <Router>
         <div className="container">
           <Switch>
-            <Route exact path='/' component={Home} />
-            <Route exact path='/game' component={Game} />
+            <Route exact path='/' component={Game} />
             <Route render={function() {
               return <p> 404 - Not Found </p>
             }}/>
