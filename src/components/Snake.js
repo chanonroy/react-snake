@@ -10,28 +10,28 @@ export class Snake extends React.Component {
     super(props);
 
     this.state = {
+      start: false,
       position: {
-        // start in the center
         height: Math.floor(props.board.height / 2),
-        width: Math.floor(props.board.width / 2)
+        width: Math.floor(props.board.width / 2),
       },
-      speed: {
-        xSpeed: 0,
-        ySpeed: 0,
-      }
+      direction: 'right',
+      speed: 70,
     };
 
     this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.snakeMove = this.snakeMove.bind(this);
   }
 
   componentDidMount() {
     window.addEventListener("keydown", this.handleKeyPress);
+    setInterval(this.snakeMove, this.state.speed);
   }
 
-  handleKeyPress(event) {
+  snakeMove() {
+    var direction = this.state.direction;
 
-    if (event.key == 'ArrowUp' || event.key == 'w') {
-
+    if (direction === 'up') {
       this.setState(() => {
         return {
           position: {
@@ -40,9 +40,7 @@ export class Snake extends React.Component {
           }
         }
       })
-
-    } else if (event.key == 'ArrowRight' || event.key == 'd') {
-
+    } else if (direction === 'right') {
       this.setState(() => {
         return {
           position: {
@@ -51,10 +49,7 @@ export class Snake extends React.Component {
           }
         }
       })
-
-
-    } else if (event.key == 'ArrowDown' || event.key == 's') {
-
+    } else if (direction === 'down') {
       this.setState(() => {
         return {
           position: {
@@ -63,9 +58,7 @@ export class Snake extends React.Component {
           }
         }
       })
-
-    } else if (event.key == 'ArrowLeft' || event.key == 'a') {
-
+    } else if (direction === 'left') {
       this.setState(() => {
         return {
           position: {
@@ -74,9 +67,36 @@ export class Snake extends React.Component {
           }
         }
       })
-
+    } else if (direction === 'pause') {
+      clearInterval(this.snakeMove);
     }
 
+  }
+
+  handleKeyPress(event) {
+    // For validation that snake can't go back on itself
+    var current_dir = this.state.direction;
+
+    if ((event.key == 'ArrowUp' || event.key == 'w') && current_dir !== 'down') {
+      this.setState(() => { return { direction: 'up' } })
+
+    } else if ((event.key == 'ArrowRight' || event.key == 'd') && current_dir !== 'left' )  {
+      this.setState(() => { return { direction: 'right' } })
+
+    } else if ((event.key == 'ArrowDown' || event.key == 's') && current_dir !== 'up') {
+      this.setState(() => { return { direction: 'down' } })
+
+    } else if ((event.key == 'ArrowLeft' || event.key == 'a') && current_dir !== 'right') {
+      this.setState(() => { return { direction: 'left' } })
+
+    } else if (event.key == ' ') {
+      this.setState(() => { return { direction: 'pause' } })
+    }
+  }
+
+  gameOver() {
+    clearInterval(this.snakeMove);
+    alert('Game Over');
   }
 
   render() {
@@ -87,7 +107,6 @@ export class Snake extends React.Component {
             width={10}
             height={10}
             fill='gold'
-            onClick={this.handleKeyPress}
         />
     )
   }
