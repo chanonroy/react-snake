@@ -4,23 +4,16 @@ import propTypes from 'prop-types';
 
 import { Layer, Rect, Stage, Group } from 'react-konva';
 
-
-export function Snake(props) {
-
+export function Food(props) {
     return (
       <Rect
-          x={props.x}
-          y={props.y}
-          width={10}
-          height={10}
-          fill={props.color}
+          x={props.x} y={props.y} width={10} height={10}
+          fill='white'
       />
     )
-
 }
 
-Snake.propTypes = {
+Food.propTypes = {
   x: propTypes.number.isRequired,
   y: propTypes.number.isRequired,
-  color: propTypes.string.isRequired,
 }
