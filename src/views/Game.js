@@ -81,7 +81,7 @@ export class Game extends React.Component {
 
         {this.state.game_start ?
           <div className="footer"> Happy Hunting! </div> :
-          <div className="footer"> Press Enter or Space to begin </div>
+          <div className="footer"> Use WASD or the arrow keys to move. Press Enter or Space to begin </div>
         }
 
       </div>
@@ -230,6 +230,7 @@ export class Game extends React.Component {
         return { interval_id: interval_id }
       })
     } else if (str === 'off') {
+
       alert(`Game Over. Your score was ${this.state.food_count}.`);
       clearInterval(this.state.interval_id);
 
