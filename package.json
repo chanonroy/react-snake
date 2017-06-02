@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_ENV=dev webpack-dev-server --hot --inline",
-    "build": "cross-env NODE_ENV=prod webpack --hide-modules"
+    "build": "cross-env NODE_ENV=prod webpack --hide-modules",
+    "deploy": "yarn run build && firebase deploy"
   },
   "babel": {
     "presets": [
@@ -32,6 +33,7 @@
     "css-loader": "^0.28.4",
     "extract-text-webpack-plugin": "^2.1.0",
     "file-loader": "^0.11.1",
+    "firebase": "^4.1.1",
     "html-webpack-plugin": "^2.28.0",
     "node-sass": "^4.5.3",
     "postcss-loader": "^2.0.5",

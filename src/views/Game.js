@@ -31,7 +31,7 @@ export class Game extends React.Component {
         x: Math.floor(1000 / 2),
         y: Math.floor(500 / 2),
       },
-      snake_tail: [[500, 250]], // nested arrays for tail rendering
+      snake_tail: [], // nested arrays for tail rendering
       direction: 'right',
       speed: 50,
     };

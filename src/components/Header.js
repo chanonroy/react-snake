@@ -5,7 +5,7 @@ export function Header(props) {
     return (
       <h1 className="header">
         <div className="header__title">
-          <img className="header__icon" src="dist/assets/snake.svg" alt="snake"/>
+          <img className="header__icon" src="assets/snake.svg" alt="snake"/>
           Snake Game
         </div>
         <div className="header__stats">
