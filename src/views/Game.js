@@ -95,8 +95,8 @@ export class Game extends React.Component {
 
   // Spawns food at state of food position
   spawn_food() {
-    var x_max = this.state.board.max_width;
-    var y_max = this.state.board.max_height;
+    var x_max = this.state.board.max_width - 10;
+    var y_max = this.state.board.max_height - 10;
     var x_new = Math.floor((Math.random() * (x_max - 0 + 1) + 0)/10)*10;
     var y_new = Math.floor((Math.random() * (y_max - 0 + 1) + 0)/10)*10;
 
