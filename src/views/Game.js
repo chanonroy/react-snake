@@ -22,16 +22,17 @@ export class Game extends React.Component {
         snake: 'Gold',
       },
       food_position: {
-        x: 50,
-        y: 50,
+        x: -10,
+        y: -10,
       },
       food_count: 0,
       snake_position: {
         x: Math.floor(1000 / 2),
         y: Math.floor(500 / 2),
       },
+      snake_tail: [[500, 250]],
       direction: 'right',
-      speed: 55,
+      speed: 75,
     };
 
     this.spawn_food = this.spawn_food.bind(this);
@@ -43,16 +44,18 @@ export class Game extends React.Component {
   // JSX
   render() {
     return (
-
       <div>
+
         <h1 className="header">
           <div className="header__title">
-            <img className="header__icon" src="dist/assets/snake.png" alt="snake"/> Snake Game
+            <img className="header__icon" src="dist/assets/snake.png" alt="snake"/>
+            React Snake Game
           </div>
           <div className="header__stats">
             {this.state.food_count}
           </div>
         </h1>
+
         <Stage width={this.state.board.max_width} height={this.state.board.max_height}>
           <Layer>
             <Board
@@ -65,6 +68,15 @@ export class Game extends React.Component {
               color={this.state.colors.snake}
               x={this.state.snake_position.x}
               y={this.state.snake_position.y}/>
+            {this.state.snake_tail.map((tail, index) => {
+              return (
+                <Snake
+                  key={index}
+                  color={this.state.colors.snake}
+                  x={tail[0]}
+                  y={tail[1]}/>
+              )
+            })}
           </Layer>
           <Layer>
             <Food
@@ -72,15 +84,14 @@ export class Game extends React.Component {
               y={this.state.food_position.y}/>
           </Layer>
         </Stage>
-      </div>
 
+      </div>
     )
   }
 
   // Lifecycle Hook
   componentDidMount() {
     window.addEventListener("keydown", this.handleKeyPress);
-    this.spawn_food();
   }
 
   // Spawns food at state of food position
@@ -120,6 +131,7 @@ export class Game extends React.Component {
         this.setState(() => {
           return { game_start: true }
         })
+        this.spawn_food();
         this.toggle_game('on');
       }
     }
@@ -132,6 +144,30 @@ export class Game extends React.Component {
     var current_width = this.state.snake_position.x;
     var max_height = this.state.board.max_height;
     var max_width = this.state.board.max_width;
+    var tail = this.state.snake_tail;
+
+
+    // Shift the tail to the left
+    if (tail.length > 1) {
+      for (var i = 0; i < tail.length - 1; i++) {
+        tail[i] = tail[i + 1];
+      }
+    }
+
+    // Add the latest position to right of the array
+    tail[tail.length - 1] = [current_width, current_height];
+    this.setState(() => {
+      return { snake_tail: tail }
+    })
+
+    // Snake hits itself - Game Over (can only hit when over 4 tail items)
+    if (tail.length > 4) {
+      for (var i = 0; i < tail.length - 4; i++) {
+        if (tail[i][0] === current_width && tail[i][1] === current_height) {
+          return this.toggle_game('off');
+        }
+      }
+    }
 
     // Snake hits the edge - Game Over
     if (current_width < 0 || current_width >= max_width) {
@@ -143,8 +179,10 @@ export class Game extends React.Component {
     // Snake eats food
     if (current_height === this.state.food_position.y && current_width === this.state.food_position.x) {
       this.setState(() => {
+        tail.push([current_width, current_height])
         return {
-          food_count: this.state.food_count + 1
+          food_count: this.state.food_count + 1,
+          snake_tail: tail
         }
       })
       this.spawn_food();
@@ -190,15 +228,20 @@ export class Game extends React.Component {
     } else if (str === 'off') {
       alert('Game Over');
       clearInterval(this.state.interval_id);
-      this.spawn_food();
+
       this.setState(() => {
         return {
           game_start: false,
           food_count: 0,
+          food_position: {
+            x: -10,
+            y: -10,
+          },
           snake_position: {
             x: Math.floor(this.state.board.max_width / 2),
             y: Math.floor(this.state.board.max_height / 2),
           },
+          snake_tail: []
         }
       })
     }
