@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=dev webpack-dev-server --hot --inline",
     "build": "cross-env NODE_ENV=prod webpack --hide-modules",
-    "deploy": "yarn run build && firebase deploy"
+    "deploy": "firebase deploy"
   },
   "babel": {
     "presets": [
