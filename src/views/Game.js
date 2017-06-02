@@ -2,6 +2,7 @@ import React from 'react';
 import { Layer, Rect, Stage, Group } from 'react-konva';
 
 // Functional Stateless Components
+import { Header } from '../components/Header';
 import { Board } from '../components/Board';
 import { Snake } from '../components/Snake';
 import { Food } from '../components/Food';
@@ -11,14 +12,14 @@ export class Game extends React.Component {
     super(props);
 
     this.state = {
-      game_start: false, // start
+      game_start: false,
       interval_id: null,
       board: {
         max_width: 1000,
         max_height: 500,
       },
       colors: {
-        board: 'MediumSeaGreen',
+        board: '#223041',
         snake: 'Gold',
       },
       food_position: {
@@ -30,9 +31,9 @@ export class Game extends React.Component {
         x: Math.floor(1000 / 2),
         y: Math.floor(500 / 2),
       },
-      snake_tail: [[500, 250]],
+      snake_tail: [[500, 250]], // nested arrays for tail rendering
       direction: 'right',
-      speed: 75,
+      speed: 50,
     };
 
     this.spawn_food = this.spawn_food.bind(this);
@@ -43,18 +44,11 @@ export class Game extends React.Component {
 
   // JSX
   render() {
+
     return (
       <div>
 
-        <h1 className="header">
-          <div className="header__title">
-            <img className="header__icon" src="dist/assets/snake.png" alt="snake"/>
-            React Snake Game
-          </div>
-          <div className="header__stats">
-            {this.state.food_count}
-          </div>
-        </h1>
+        <Header score={this.state.food_count} />
 
         <Stage width={this.state.board.max_width} height={this.state.board.max_height}>
           <Layer>
@@ -84,6 +78,11 @@ export class Game extends React.Component {
               y={this.state.food_position.y}/>
           </Layer>
         </Stage>
+
+        {this.state.game_start ?
+          <div className="footer"> Happy Hunting! </div> :
+          <div className="footer"> Press Enter or Space to begin </div>
+        }
 
       </div>
     )
@@ -146,74 +145,79 @@ export class Game extends React.Component {
     var max_width = this.state.board.max_width;
     var tail = this.state.snake_tail;
 
+    // TAIL ARRAY MUTATION ----
 
-    // Shift the tail to the left
-    if (tail.length > 1) {
-      for (var i = 0; i < tail.length - 1; i++) {
-        tail[i] = tail[i + 1];
-      }
-    }
-
-    // Add the latest position to right of the array
-    tail[tail.length - 1] = [current_width, current_height];
-    this.setState(() => {
-      return { snake_tail: tail }
-    })
-
-    // Snake hits itself - Game Over (can only hit when over 4 tail items)
-    if (tail.length > 4) {
-      for (var i = 0; i < tail.length - 4; i++) {
-        if (tail[i][0] === current_width && tail[i][1] === current_height) {
-          return this.toggle_game('off');
+      // Shift tail array to the left
+      if (tail.length > 1) {
+        for (var i = 0; i < tail.length - 1; i++) {
+          tail[i] = tail[i + 1];
         }
       }
-    }
 
-    // Snake hits the edge - Game Over
-    if (current_width < 0 || current_width >= max_width) {
-      return this.toggle_game('off');
-    } else if (current_height < 0 || current_height >= max_height) {
-      return this.toggle_game('off');
-    }
+      // Add the latest head position to right of the array
+      tail[tail.length - 1] = [current_width, current_height];
+      this.setState(() => {
+        return { snake_tail: tail }
+      })
 
-    // Snake eats food
-    if (current_height === this.state.food_position.y && current_width === this.state.food_position.x) {
-      this.setState(() => {
-        tail.push([current_width, current_height])
-        return {
-          food_count: this.state.food_count + 1,
-          snake_tail: tail
-        }
-      })
-      this.spawn_food();
-    }
+    // COLLISION DETECTION ----
 
-    // Snake moves in a certain direction
-    if (direction === 'up') {
-      this.setState(() => {
-        return {
-          snake_position: { y: current_height - 10, x: current_width }
+      // Snake hits itself - Game Over (can only hit when over 4 tail items)
+      if (tail.length > 4) {
+        for (var i = 0; i < tail.length - 4; i++) {
+          if (tail[i][0] === current_width && tail[i][1] === current_height) {
+            return this.toggle_game('off');
+          }
         }
-      })
-    } else if (direction === 'right') {
-      this.setState(() => {
-        return {
-          snake_position: { y: current_height, x: current_width + 10 }
-        }
-      })
-    } else if (direction === 'down') {
-      this.setState(() => {
-        return {
-          snake_position: { y: current_height + 10, x: current_width }
-        }
-      })
-    } else if (direction === 'left') {
-      this.setState(() => {
-        return {
-          snake_position: { y: current_height, x: current_width - 10 }
-        }
-      })
-    }
+      }
+
+      // Snake hits the edge - Game Over
+      if (current_width < 0 || current_width >= max_width) {
+        return this.toggle_game('off');
+      } else if (current_height < 0 || current_height >= max_height) {
+        return this.toggle_game('off');
+      }
+
+      // Snake eats food
+      if (current_height === this.state.food_position.y && current_width === this.state.food_position.x) {
+        this.setState(() => {
+          tail.push([current_width, current_height], [current_width, current_height], [current_width, current_height], [current_width, current_height])
+          return {
+            food_count: this.state.food_count + 1,
+            snake_tail: tail
+          }
+        })
+        this.spawn_food();
+      }
+
+    // SNAKE MOVEMENT DIRECTION ----
+
+      // Direction derived from window event listener
+      if (direction === 'up') {
+        this.setState(() => {
+          return {
+            snake_position: { y: current_height - 10, x: current_width }
+          }
+        })
+      } else if (direction === 'right') {
+        this.setState(() => {
+          return {
+            snake_position: { y: current_height, x: current_width + 10 }
+          }
+        })
+      } else if (direction === 'down') {
+        this.setState(() => {
+          return {
+            snake_position: { y: current_height + 10, x: current_width }
+          }
+        })
+      } else if (direction === 'left') {
+        this.setState(() => {
+          return {
+            snake_position: { y: current_height, x: current_width - 10 }
+          }
+        })
+      }
 
   }
 
@@ -226,7 +230,7 @@ export class Game extends React.Component {
         return { interval_id: interval_id }
       })
     } else if (str === 'off') {
-      alert('Game Over');
+      alert(`Game Over. Your score was ${this.state.food_count}.`);
       clearInterval(this.state.interval_id);
 
       this.setState(() => {

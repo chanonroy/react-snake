@@ -1,5 +1,8 @@
 // Colors
 $color-font: #384047;
+$color-black: #182432;
+$color-green: #3CB371;
+$color-extra-light-silver: #C0CCDA;
 
 // Properties
 $shadow-default: 0 2px 2px 0 rgba(0,0,0,.15);
@@ -8,7 +11,8 @@ $transition-custom: all 0.3s ease;
 
 body {
   margin: 0;
-  color: $color-font;
+  color: white;
+  background-color: #182432;
   font-family: 'Open Sans', sans-serif;
   ul {
     padding: 0;
