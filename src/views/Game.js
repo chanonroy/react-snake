@@ -25,6 +25,7 @@ export class Game extends React.Component {
         x: 50,
         y: 50,
       },
+      food_count: 0,
       snake_position: {
         x: Math.floor(1000 / 2),
         y: Math.floor(500 / 2),
@@ -39,12 +40,18 @@ export class Game extends React.Component {
     this.toggle_game = this.toggle_game.bind(this);
   }
 
+  // JSX
   render() {
     return (
 
       <div>
         <h1 className="header">
-          <img className="header__icon" src="dist/assets/snake.png" alt="snake"/> Snake Game
+          <div className="header__title">
+            <img className="header__icon" src="dist/assets/snake.png" alt="snake"/> Snake Game
+          </div>
+          <div className="header__stats">
+            {this.state.food_count}
+          </div>
         </h1>
         <Stage width={this.state.board.max_width} height={this.state.board.max_height}>
           <Layer>
@@ -70,12 +77,27 @@ export class Game extends React.Component {
     )
   }
 
+  // Lifecycle Hook
   componentDidMount() {
     window.addEventListener("keydown", this.handleKeyPress);
     this.spawn_food();
   }
 
-  // ---- METHODS RE: SNAKE MOVEMENT ----
+  // Spawns food at state of food position
+  spawn_food() {
+    var x_max = this.state.board.max_width;
+    var y_max = this.state.board.max_height;
+    var x_new = Math.floor((Math.random() * (x_max - 0 + 1) + 0)/10)*10;
+    var y_new = Math.floor((Math.random() * (y_max - 0 + 1) + 0)/10)*10;
+
+    this.setState(() => {
+      return {
+        food_position: { x: x_new, y: y_new }
+      }
+    })
+  }
+
+  // KeyPress Handling
   handleKeyPress(event) {
 
     // For validation that snake can't go back on itself
@@ -103,6 +125,7 @@ export class Game extends React.Component {
     }
   }
 
+  // Moving Snake + Collision Detection
   move_snake() {
     var direction = this.state.direction;
     var current_height = this.state.snake_position.y;
@@ -115,6 +138,16 @@ export class Game extends React.Component {
       return this.toggle_game('off');
     } else if (current_height < 0 || current_height >= max_height) {
       return this.toggle_game('off');
+    }
+
+    // Snake eats food
+    if (current_height === this.state.food_position.y && current_width === this.state.food_position.x) {
+      this.setState(() => {
+        return {
+          food_count: this.state.food_count + 1
+        }
+      })
+      this.spawn_food();
     }
 
     // Snake moves in a certain direction
@@ -146,9 +179,8 @@ export class Game extends React.Component {
 
   }
 
-  // ---- METHODS RE: STATE OF GAME ----
+  // Turning game 'off' or 'on'.
   toggle_game(str) {
-    // str = 'on', 'off'
 
     if (str === 'on') {
       var interval_id = setInterval(this.move_snake, this.state.speed);
@@ -158,9 +190,11 @@ export class Game extends React.Component {
     } else if (str === 'off') {
       alert('Game Over');
       clearInterval(this.state.interval_id);
+      this.spawn_food();
       this.setState(() => {
         return {
           game_start: false,
+          food_count: 0,
           snake_position: {
             x: Math.floor(this.state.board.max_width / 2),
             y: Math.floor(this.state.board.max_height / 2),
@@ -168,19 +202,7 @@ export class Game extends React.Component {
         }
       })
     }
-  }
 
-  spawn_food() {
-    var x_max = this.state.board.max_width;
-    var y_max = this.state.board.max_height;
-    var x_new = Math.floor((Math.random() * (x_max - 0 + 1) + 0)/10)*10;
-    var y_new = Math.floor((Math.random() * (y_max - 0 + 1) + 0)/10)*10;
-
-    this.setState(() => {
-      return {
-        food_position: { x: x_new, y: y_new }
-      }
-    })
   }
 
 }
